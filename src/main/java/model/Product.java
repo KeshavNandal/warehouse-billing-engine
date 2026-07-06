@@ -3,7 +3,7 @@ package model;
 public class Product {
     private int id;
     private String name;
-    private String sku;
+    private String sku; // stock keeping unit
     private double price;
     private int stockQuantity;
 
@@ -18,6 +18,13 @@ public class Product {
         this.sku = sku;
         this.price = price;
         this.price = stockQuantity;
+    }
+    public Product( String name, String sku, double price, int stockQuantity )
+    {
+        this.name = name;
+        this.sku = sku;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
     }
 
     public void setId(int id) {
