@@ -1,0 +1,95 @@
+package dao;
+
+import model.InvoiceItem;
+import model.Invoice;
+import db.DBConnection;
+
+import java.sql.*;
+
+public class InvoiceDAO
+{
+
+    public void generateInvoice(Invoice invoice)
+    {
+        String insertInvoiceSQL = "INSERT INTO invoices (customer_name, total_amount) VALUES(?, ?)";
+        String insertItemSQL = "INSERT INTO invoice_items (invoice_id, product_id, quantity, price_per_unit) VALUES (?, ?, ?, ?)";
+
+        Connection conn = null;
+        PreparedStatement invoiceSTMT = null;
+        PreparedStatement itemSTMT = null;
+        ResultSet generatedKeys = null;
+
+        try
+        {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // Turn off auto-commit to start a manual transaction block
+
+            invoiceSTMT = conn.prepareStatement(insertInvoiceSQL, Statement.RETURN_GENERATED_KEYS);
+            invoiceSTMT.setString(1, invoice.getCustomerName());
+            invoiceSTMT.setDouble(2, invoice.getTotalAmount());
+            invoiceSTMT.executeUpdate();
+
+            generatedKeys = invoiceSTMT.getGeneratedKeys();
+            int invoiceId = -1;
+            if (generatedKeys.next())
+            {
+                invoiceId = generatedKeys.getInt(1); // column index
+
+            }
+            else
+            {
+                throw new SQLException("Failed to retrieve generated Invoice ID.");
+
+            }
+
+            itemSTMT = conn.prepareStatement(insertItemSQL);
+
+            for (InvoiceItem item : invoice.getItems())
+            {
+                itemSTMT.setInt(1, invoiceId);
+                itemSTMT.setInt(2, item.getProductId());
+                itemSTMT.setInt(3, item.getQuantity());
+                itemSTMT.setDouble(4, item.getPricePerUnit());
+                itemSTMT.addBatch();
+            }
+
+            itemSTMT.executeBatch();
+            conn.commit();
+            System.out.println("Transaction Committed Successfully: Invoice #" + invoiceId + " generated!");
+
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println("Transaction failed! Rolling back changes.. " + e.getMessage());
+            if(conn != null)
+            {
+                try
+                {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    System.out.println("Rollback failed.. " + ex.getMessage());
+                }
+
+
+            }
+        }
+        finally
+        {
+            try
+            {
+                if (generatedKeys != null) generatedKeys.close();
+                if (invoiceSTMT != null) invoiceSTMT.close();
+                if (itemSTMT != null) itemSTMT.close();
+                if (conn != null) conn.close();
+            }
+            catch (SQLException e)
+            {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
+
+        }
+
+    }
+}
+
