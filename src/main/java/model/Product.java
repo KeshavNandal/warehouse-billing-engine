@@ -17,7 +17,7 @@ public class Product {
         this.name = name;
         this.sku = sku;
         this.price = price;
-        this.price = stockQuantity;
+        this.stockQuantity = stockQuantity;
     }
     public Product( String name, String sku, double price, int stockQuantity )
     {

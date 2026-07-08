@@ -95,4 +95,49 @@ public class ProductDAO {
 
     return productList;
     }
+
+    public Product getProductById(int id)
+    {
+        String sql = "SELECT * FROM products WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Product TempProduct = null;
+
+        try
+        {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1,id);
+            rs = stmt.executeQuery();
+            if(rs.next())
+            {
+                String name = rs.getString("name");
+                String sku = rs.getString("sku");
+                double price= rs.getDouble("price");
+                int stockQuantity = rs.getInt("stock_quantity");
+                 TempProduct = new Product(id, name, sku, price, stockQuantity);
+            }
+
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println("Error fetching product " + e.getMessage());
+        }
+        finally
+        {
+            try
+            {
+                if(rs!=null)rs.close();
+                if(stmt!=null) stmt.close();
+                if(conn!=null) conn.close();
+            }
+            catch (SQLException ex)
+            {
+                System.out.println("Failed to close the pipeline.." + ex.getMessage() );
+            }
+        }
+        return TempProduct;
+    }
 }

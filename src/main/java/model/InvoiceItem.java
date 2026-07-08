@@ -15,6 +15,13 @@ public class InvoiceItem {
 
     }
 
+    public InvoiceItem(int productId, int quantity, double pricePerUnit) {
+        this.productId = productId;
+        this.quantity = quantity;
+        this.pricePerUnit = pricePerUnit;
+
+    }
+
     public int getId()
     {
         return id;
