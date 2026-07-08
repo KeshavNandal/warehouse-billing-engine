@@ -22,8 +22,8 @@ public class Main {
             return;
         }
 
-        InvoiceItem TestItem1 = new InvoiceItem(p1.getId(), 13,p1.getPrice());
-        InvoiceItem TestItem2 = new InvoiceItem(p2.getId(),7,p2.getPrice());
+        InvoiceItem TestItem1 = new InvoiceItem(p1.getId(), 100,p1.getPrice());
+        InvoiceItem TestItem2 = new InvoiceItem(p2.getId(),100,p2.getPrice());
 
 
         TestInvoice.addItem(TestItem1);
